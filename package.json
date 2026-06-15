@@ -1,6 +1,6 @@
 {
   "name": "agy-plugin-cc",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "description": "Cross-model code review plugin for Claude Code, powered by the Antigravity CLI (agy) on a Gemini subscription.",

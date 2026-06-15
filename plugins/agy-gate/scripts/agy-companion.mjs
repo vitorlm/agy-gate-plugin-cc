@@ -317,6 +317,50 @@ export async function cancelHandler(jobId, deps) {
 }
 
 /**
+ * Lightweight auth probe: spawn `agy --print` with a trivial prompt and treat
+ * any exit-0 response as authenticated. agy is an agentic model (uses tools),
+ * so it never returns review-schema JSON — using the review driver as a probe
+ * produces CLI_ERROR on valid auth. This probe bypasses schema validation.
+ * @returns {Promise<{ ok: true } | { ok: false, error: { code: string, message: string, remediation?: string } }>}
+ */
+async function agySanityProbe() {
+  const { classifyError } = await import("./lib/agy-cli-driver.mjs");
+  return new Promise((resolve) => {
+    const child = spawn("agy", ["--print", "ok"], {
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: 30_000,
+    });
+    let stderr = "";
+    child.stderr?.on("data", (d) => {
+      stderr += d.toString();
+    });
+    child.on("error", (/** @type {NodeJS.ErrnoException} */ err) => {
+      if (err.code === "ENOENT") {
+        resolve({
+          ok: false,
+          error: {
+            code: "AGY_NOT_INSTALLED",
+            message: "agy binary not found on PATH",
+            remediation: "Install Antigravity CLI and ensure it is on PATH.",
+          },
+        });
+      } else {
+        const classified = classifyError(err);
+        resolve({ ok: false, error: classified });
+      }
+    });
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolve({ ok: true });
+      } else {
+        const classified = classifyError(new Error(stderr || `exit ${code}`));
+        resolve({ ok: false, error: classified });
+      }
+    });
+  });
+}
+
+/**
  * `setup` — pre-install the pinned runtime deps (ajv) + run a real login probe (auth vs throttled,
  * §6.3) + report the effective stop-gate config. The probe is a minimal read-only
  * agy call; failures are classified, never run live in tests (`runSetup` is unit-
@@ -335,14 +379,7 @@ export async function setupCommand() {
   }
   const dataDir = DATA_DIR;
   return runSetup({
-    probe: () =>
-      createDriver().review({
-        kind: "review",
-        prompt: "Reply with an empty review. This is a connectivity probe.",
-        workingDirectory: process.cwd(),
-        skipGitRepoCheck: true,
-        model: resolveModel(process.env.AGY_GATE_MODEL ?? null),
-      }),
+    probe: () => agySanityProbe(),
     ensureDeps: () =>
       ensureDeps(dataDir, {
         install: async () => {
