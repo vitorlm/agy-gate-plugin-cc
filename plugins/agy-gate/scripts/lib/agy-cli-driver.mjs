@@ -50,7 +50,7 @@ export function classifyError(err) {
     return {
       code: "AUTH_REQUIRED",
       message,
-      remediation: "Run `agy` and log in to your Antigravity (Gemini) subscription.",
+      remediation: "Run `agy login` to authenticate to your Antigravity (Gemini) subscription.",
     };
   }
   if (low.includes("model") && (low.includes("not found") || low.includes("unavailable") || low.includes("unknown"))) {
