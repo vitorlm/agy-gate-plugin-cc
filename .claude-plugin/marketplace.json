@@ -1,0 +1,12 @@
+{
+  "name": "vitorlm-agy-gate",
+  "description": "Cross-model code review for Claude Code, powered by the Antigravity CLI (agy) on a Gemini subscription.",
+  "owner": { "name": "Vitor Mendonça" },
+  "plugins": [
+    {
+      "name": "agy-gate",
+      "source": "./plugins/agy-gate",
+      "description": "Cross-model code review for Claude Code."
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "name": "agy-gate",
+  "version": "0.1.0",
+  "description": "Cross-model code review for Claude Code: review, adversarial review, and a converging stop-gate, powered by the Antigravity CLI (agy) on your Gemini subscription.",
+  "author": { "name": "Vitor Mendonça" },
+  "homepage": "https://github.com/vitorlm/agy-gate-plugin-cc",
+  "repository": "https://github.com/vitorlm/agy-gate-plugin-cc",
+  "license": "Apache-2.0",
+  "keywords": ["gemini", "antigravity", "agy", "code-review", "adversarial-review", "cross-model"],
+  "userConfig": {
+    "stopReviewGate": {
+      "type": "boolean",
+      "title": "Enable stop review-gate",
+      "description": "Run a converging Gemini review when a turn ends.",
+      "default": false
+    },
+    "stopGateOnUnavailable": {
+      "type": "string",
+      "title": "Stop-gate behavior when Gemini is unavailable",
+      "description": "allow (warn, NOT REVIEWED) | block (fail-closed)",
+      "default": "allow"
+    },
+    "notReviewedStreakLimit": {
+      "type": "number",
+      "title": "Escalate after N consecutive NOT REVIEWED turns",
+      "description": "After this many consecutive unreviewed turns, escalate the warning with an actionable remediation.",
+      "default": 3,
+      "min": 1,
+      "max": 20
+    },
+    "reviewModel": {
+      "type": "string",
+      "title": "Review model (Gemini family only)",
+      "description": "Gemini model used for review (e.g. 'Gemini 3.1 Pro (High)'). Non-Gemini models are rejected to preserve cross-family review.",
+      "default": "Gemini 3.1 Pro (High)"
+    },
+    "maxIterations": {
+      "type": "number",
+      "title": "Stop-gate max iterations",
+      "description": "Hard ceiling on stop-gate review->fix rounds before the loop opens and hands to a human.",
+      "default": 3,
+      "min": 1,
+      "max": 10
+    },
+    "maxReviewsPerDay": {
+      "type": "number",
+      "title": "Daily automated-review cap (quota guard)",
+      "description": "0 = no cap (default). Set >0 to enforce a daily ceiling on automated reviews.",
+      "default": 0,
+      "min": 0
+    },
+    "severityThreshold": {
+      "type": "string",
+      "title": "Stop-gate block threshold",
+      "description": "blocker | major | minor | info",
+      "default": "blocker"
+    },
+    "reviewTimeoutMs": {
+      "type": "number",
+      "title": "Review timeout (ms)",
+      "description": "Hard ceiling on a single agy --print review; a hung review becomes a clean TIMEOUT instead of a stuck shell. Default 300000 (5 min).",
+      "default": 300000,
+      "min": 30000
+    }
+  }
+}

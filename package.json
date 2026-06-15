@@ -1,0 +1,28 @@
+{
+  "name": "agy-plugin-cc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cross-model code review plugin for Claude Code, powered by the Antigravity CLI (agy) on a Gemini subscription.",
+  "author": { "name": "Vitor Mendonça" },
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/vitorlm/agy-gate-plugin-cc",
+  "repository": { "type": "git", "url": "https://github.com/vitorlm/agy-gate-plugin-cc.git" },
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "node --test",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "typecheck": "tsc -p tsconfig.scripts.json",
+    "validate": "claude plugin validate ./plugins/agy-gate --strict",
+    "check": "npm run lint && npm run typecheck && npm test && npm run validate"
+  },
+  "dependencies": {
+    "ajv": "8.17.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.0",
+    "@types/node": "25.9.3",
+    "typescript": "6.0.3"
+  }
+}
