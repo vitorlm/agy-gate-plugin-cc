@@ -94,7 +94,16 @@ test("probeAuth treats a driver {ok:true} result as OK", async () => {
 });
 
 test("probeAuth → AGY_NOT_INSTALLED when the probe returns that error code", async () => {
-  const r = await probeAuth({ probe: async () => ({ ok: false, error: { code: "AGY_NOT_INSTALLED", message: "agy not found", remediation: "install Antigravity CLI" } }) });
+  const r = await probeAuth({
+    probe: async () => ({
+      ok: false,
+      error: {
+        code: "AGY_NOT_INSTALLED",
+        message: "agy not found",
+        remediation: "install Antigravity CLI",
+      },
+    }),
+  });
   assert.equal(r.state, "AGY_NOT_INSTALLED");
   assert.match(r.remediation, /Antigravity/i);
 });

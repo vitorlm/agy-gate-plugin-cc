@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { DEFAULT_MODEL, assertGemini, resolveModel } from "./models.mjs";
+import { assertGemini, DEFAULT_MODEL, resolveModel } from "./models.mjs";
 
 test("resolveModel with no input returns the default Gemini model", () => {
   assert.equal(resolveModel(), DEFAULT_MODEL);

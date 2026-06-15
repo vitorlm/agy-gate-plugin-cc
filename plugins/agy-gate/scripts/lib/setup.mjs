@@ -89,7 +89,7 @@ export async function runSetup({ probe, ensureDeps, readAuthFile, config, write 
       break;
     case "AUTH_REQUIRED":
       out("Auth: NOT authenticated.");
-      out(`  → ${auth.remediation ?? "Run \`agy login\` to authenticate."}`);
+      out(`  → ${auth.remediation ?? "Run `agy login` to authenticate."}`);
       code = 1;
       break;
     case "RATE_LIMITED":

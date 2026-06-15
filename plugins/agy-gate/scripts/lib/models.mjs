@@ -33,7 +33,8 @@ export function assertGemini(model) {
     error: {
       code: "MODEL_UNAVAILABLE",
       message: `cross-family review requires a Gemini model; '${model}' would defeat independent review`,
-      remediation: "Set userConfig.reviewModel (or --model) to a Gemini-family model, e.g. 'Gemini 3.1 Pro (High)'.",
+      remediation:
+        "Set userConfig.reviewModel (or --model) to a Gemini-family model, e.g. 'Gemini 3.1 Pro (High)'.",
     },
   };
 }

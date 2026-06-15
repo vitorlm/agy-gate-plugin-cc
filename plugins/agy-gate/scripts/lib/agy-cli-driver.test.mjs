@@ -32,8 +32,15 @@ function makeDriver({ child, sandboxOk = true, env = { PATH: "/bin" } } = {}) {
   const sandboxWrap = (argv, o) => {
     calls.wrapped = { argv, o };
     return sandboxOk
-      ? { ok: true, command: "sandbox-exec", args: ["-D", "PROJECT_DIR=/repo", "-f", "p.sb", ...argv] }
-      : { ok: false, error: { code: "SANDBOX_UNAVAILABLE", message: "no sandbox", remediation: "install" } };
+      ? {
+          ok: true,
+          command: "sandbox-exec",
+          args: ["-D", "PROJECT_DIR=/repo", "-f", "p.sb", ...argv],
+        }
+      : {
+          ok: false,
+          error: { code: "SANDBOX_UNAVAILABLE", message: "no sandbox", remediation: "install" },
+        };
   };
   const driver = createCliDriver({
     spawn,
@@ -47,7 +54,12 @@ function makeDriver({ child, sandboxOk = true, env = { PATH: "/bin" } } = {}) {
 }
 
 test("stripApiKeys removes Gemini/Google keys + Vertex flag, non-mutating", () => {
-  const env = { GEMINI_API_KEY: "g", GOOGLE_API_KEY: "x", GOOGLE_GENAI_USE_VERTEXAI: "1", PATH: "/bin" };
+  const env = {
+    GEMINI_API_KEY: "g",
+    GOOGLE_API_KEY: "x",
+    GOOGLE_GENAI_USE_VERTEXAI: "1",
+    PATH: "/bin",
+  };
   const out = stripApiKeys(env);
   assert.equal("GEMINI_API_KEY" in out, false);
   assert.equal("GOOGLE_API_KEY" in out, false);
@@ -58,7 +70,12 @@ test("stripApiKeys removes Gemini/Google keys + Vertex flag, non-mutating", () =
 
 test("review spawns the sandboxed command with a stripped env and the project cwd", async () => {
   const { driver, calls } = makeDriver({ env: { GEMINI_API_KEY: "g", PATH: "/bin" } });
-  await driver.review({ kind: "review", prompt: "p", workingDirectory: "/repo", model: "Gemini 3.1 Pro (High)" });
+  await driver.review({
+    kind: "review",
+    prompt: "p",
+    workingDirectory: "/repo",
+    model: "Gemini 3.1 Pro (High)",
+  });
   assert.equal(calls.spawnCommand, "sandbox-exec");
   assert.equal("GEMINI_API_KEY" in calls.spawnOpts.env, false);
   assert.equal(calls.spawnOpts.cwd, "/repo");
@@ -77,7 +94,7 @@ test("review happy path returns a validated payload and NO usage field", async (
 });
 
 test("review tolerantly parses JSON wrapped in markdown fences", async () => {
-  const fenced = "```json\n" + JSON.stringify(VALID_REVIEW) + "\n```";
+  const fenced = `\`\`\`json\n${JSON.stringify(VALID_REVIEW)}\n\`\`\``;
   const { driver } = makeDriver({ child: fakeChild({ stdout: fenced }) });
   const r = await driver.review({ kind: "review", prompt: "p", workingDirectory: "/repo" });
   assert.equal(r.ok, true);
@@ -115,14 +132,21 @@ test("review returns SANDBOX_UNAVAILABLE and never spawns when the sandbox is mi
 
 test("review rejects a non-Gemini model with MODEL_UNAVAILABLE and never spawns", async () => {
   const { driver, calls } = makeDriver({});
-  const r = await driver.review({ kind: "review", prompt: "p", workingDirectory: "/repo", model: "Claude Sonnet 4.6" });
+  const r = await driver.review({
+    kind: "review",
+    prompt: "p",
+    workingDirectory: "/repo",
+    model: "Claude Sonnet 4.6",
+  });
   assert.equal(r.ok, false);
   assert.equal(r.error.code, "MODEL_UNAVAILABLE");
   assert.equal(calls.spawnCommand, null);
 });
 
 test("review maps a nonzero exit with rate-limit stderr to RATE_LIMITED", async () => {
-  const { driver } = makeDriver({ child: fakeChild({ stdout: "", stderr: "429 rate limit", code: 1 }) });
+  const { driver } = makeDriver({
+    child: fakeChild({ stdout: "", stderr: "429 rate limit", code: 1 }),
+  });
   const r = await driver.review({ kind: "review", prompt: "p", workingDirectory: "/repo" });
   assert.equal(r.ok, false);
   assert.equal(r.error.code, "RATE_LIMITED");

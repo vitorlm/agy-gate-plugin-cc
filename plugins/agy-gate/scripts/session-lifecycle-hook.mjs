@@ -1,8 +1,8 @@
 import { rmSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { cancelJob, listJobs } from "./lib/jobs.mjs";
 import { depsInstalled } from "./lib/dep-install.mjs";
+import { cancelJob, listJobs } from "./lib/jobs.mjs";
 import { clear } from "./lib/session-tracker.mjs";
 import { workspaceStateDir } from "./lib/state.mjs";
 import { readJson, writeJsonAtomic } from "./lib/statelock.mjs";

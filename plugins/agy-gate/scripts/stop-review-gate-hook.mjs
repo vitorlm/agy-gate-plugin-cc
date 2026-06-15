@@ -4,12 +4,12 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { createDriver } from "./lib/agy-driver.mjs";
+import { ensureDeps, PINNED_SPECS } from "./lib/dep-install.mjs";
 import { changedFiles, diffFiles, isGitRepo } from "./lib/git.mjs";
 import { loadState, postReview, preReview, saveState, stopHookOutput } from "./lib/loop-state.mjs";
 import { resolveModel } from "./lib/models.mjs";
 import { composePrompt } from "./lib/prompts.mjs";
 import { resolveScope } from "./lib/scope.mjs";
-import { ensureDeps, PINNED_SPECS } from "./lib/dep-install.mjs";
 import { touched } from "./lib/session-tracker.mjs";
 
 const execFileAsync = promisify(execFile);

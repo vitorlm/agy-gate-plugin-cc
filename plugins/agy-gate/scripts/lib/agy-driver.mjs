@@ -12,7 +12,10 @@ import { validate as validateSchema } from "./review-schema.mjs";
 export function createDriver(overrides = {}) {
   const { dataDir, ...rest } = overrides;
   const dir = dataDir ?? process.env.CLAUDE_PLUGIN_DATA ?? null;
-  const validate = (/** @type {any} */ kind, /** @type {unknown} */ payload, /** @type {any} */ opts) =>
-    validateSchema(kind, payload, { dataDir: opts?.dataDir ?? dir });
+  const validate = (
+    /** @type {any} */ kind,
+    /** @type {unknown} */ payload,
+    /** @type {any} */ opts,
+  ) => validateSchema(kind, payload, { dataDir: opts?.dataDir ?? dir });
   return createCliDriver({ validate, dataDir: dir, ...rest });
 }

@@ -46,14 +46,24 @@ test("Linux branch emits bwrap with ro-bind, gemini state bind, share-net, chdir
 });
 
 test("returns SANDBOX_UNAVAILABLE when the platform sandbox binary is missing", () => {
-  const r = wrap(ARGV, { projectDir: "/tmp/proj", platform: "darwin", realpath: (p) => p, binExists: () => false });
+  const r = wrap(ARGV, {
+    projectDir: "/tmp/proj",
+    platform: "darwin",
+    realpath: (p) => p,
+    binExists: () => false,
+  });
   assert.equal(r.ok, false);
   assert.equal(r.error.code, "SANDBOX_UNAVAILABLE");
   assert.ok(r.error.remediation);
 });
 
 test("returns SANDBOX_UNAVAILABLE on an unsupported platform (no unsandboxed run)", () => {
-  const r = wrap(ARGV, { projectDir: "/tmp/proj", platform: "win32", realpath: (p) => p, binExists: () => true });
+  const r = wrap(ARGV, {
+    projectDir: "/tmp/proj",
+    platform: "win32",
+    realpath: (p) => p,
+    binExists: () => true,
+  });
   assert.equal(r.ok, false);
   assert.equal(r.error.code, "SANDBOX_UNAVAILABLE");
 });

@@ -11,7 +11,10 @@ test("createDriver wires a working driver that validates a real payload", async 
     c.stdout = new EventEmitter();
     c.stderr = new EventEmitter();
     c.kill = () => {};
-    queueMicrotask(() => { c.stdout.emit("data", JSON.stringify(VALID)); c.emit("close", 0, null); });
+    queueMicrotask(() => {
+      c.stdout.emit("data", JSON.stringify(VALID));
+      c.emit("close", 0, null);
+    });
     return c;
   };
   const driver = createDriver({

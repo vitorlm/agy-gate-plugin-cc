@@ -35,5 +35,8 @@ test("tolerant normalization strips unknown top-level keys (additionalProperties
 });
 
 test("validate throws on an unknown kind", async () => {
-  await assert.rejects(() => validate("nope", VALID_REVIEW, { dataDir: null }), /unknown schema kind/);
+  await assert.rejects(
+    () => validate("nope", VALID_REVIEW, { dataDir: null }),
+    /unknown schema kind/,
+  );
 });

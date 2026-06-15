@@ -76,7 +76,11 @@ test("runSetup AGY_NOT_INSTALLED → non-zero exit, install instruction", async 
   const code = await runSetup({
     probe: async () => ({
       ok: false,
-      error: { code: "AGY_NOT_INSTALLED", message: "agy not found", remediation: "Install Antigravity CLI" },
+      error: {
+        code: "AGY_NOT_INSTALLED",
+        message: "agy not found",
+        remediation: "Install Antigravity CLI",
+      },
     }),
     readAuthFile: () => false,
     ensureDeps: async () => ({ ok: true, installed: false }),

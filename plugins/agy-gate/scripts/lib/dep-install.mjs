@@ -45,8 +45,7 @@ export async function ensureDeps(dataDir, { installed = () => depsInstalled(data
       error: {
         code: "CLI_ERROR",
         message: `Failed to install runtime deps (${PINNED_SPECS.join(", ")}): ${err instanceof Error ? err.message : String(err)}`,
-        remediation:
-          "Run /agy-gate:setup to pre-install ajv, or check npm connectivity.",
+        remediation: "Run /agy-gate:setup to pre-install ajv, or check npm connectivity.",
       },
     };
   }

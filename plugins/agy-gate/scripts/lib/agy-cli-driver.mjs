@@ -39,21 +39,34 @@ export function classifyError(err) {
       remediation: "Install the Antigravity CLI (`agy`) and run it once to log in.",
     };
   }
-  if (low.includes("429") || low.includes("rate limit") || low.includes("too many requests") || low.includes("quota")) {
+  if (
+    low.includes("429") ||
+    low.includes("rate limit") ||
+    low.includes("too many requests") ||
+    low.includes("quota")
+  ) {
     return {
       code: "RATE_LIMITED",
       message,
       remediation: "Wait for the cooldown, then retry; consider lowering automated review volume.",
     };
   }
-  if (low.includes("401") || low.includes("unauthorized") || low.includes("not logged in") || low.includes("login")) {
+  if (
+    low.includes("401") ||
+    low.includes("unauthorized") ||
+    low.includes("not logged in") ||
+    low.includes("login")
+  ) {
     return {
       code: "AUTH_REQUIRED",
       message,
       remediation: "Run `agy login` to authenticate to your Antigravity (Gemini) subscription.",
     };
   }
-  if (low.includes("model") && (low.includes("not found") || low.includes("unavailable") || low.includes("unknown"))) {
+  if (
+    low.includes("model") &&
+    (low.includes("not found") || low.includes("unavailable") || low.includes("unknown"))
+  ) {
     return {
       code: "MODEL_UNAVAILABLE",
       message,
@@ -132,7 +145,15 @@ export function createCliDriver({
 
       // 2. Wrap the spawn in the OS read-only sandbox — never run unsandboxed (§10).
       const timeoutSec = Math.round(timeoutMs / 1000);
-      const argv = ["agy", "--print", prompt, "--model", resolved, "--print-timeout", `${timeoutSec}s`];
+      const argv = [
+        "agy",
+        "--print",
+        prompt,
+        "--model",
+        resolved,
+        "--print-timeout",
+        `${timeoutSec}s`,
+      ];
       const wrapped = sandboxWrap(argv, { projectDir: workingDirectory, platform, env });
       if (!wrapped.ok) return { ok: false, error: wrapped.error };
 
@@ -182,7 +203,8 @@ export function createCliDriver({
           error: {
             code: "TIMEOUT",
             message: `agy review timed out after ${timeoutMs}ms.`,
-            remediation: "Raise userConfig.reviewTimeoutMs or narrow the review scope (fewer files / a tighter --base).",
+            remediation:
+              "Raise userConfig.reviewTimeoutMs or narrow the review scope (fewer files / a tighter --base).",
           },
         };
       }
@@ -192,7 +214,10 @@ export function createCliDriver({
 
       // 4. Nonzero exit → classify from stderr (rate-limit/auth/etc.).
       if (result.code !== 0) {
-        return { ok: false, error: classifyError(new Error(stderr || `agy exited with code ${result.code}`)) };
+        return {
+          ok: false,
+          error: classifyError(new Error(stderr || `agy exited with code ${result.code}`)),
+        };
       }
 
       // 5. Empty stdout + exit 0 → the non-TTY drop bug (SP-1 caveat). NEVER an approval.
@@ -201,7 +226,8 @@ export function createCliDriver({
           ok: false,
           error: {
             code: "CLI_ERROR",
-            message: "agy returned empty output on exit 0 (non-TTY response drop) — treated as unavailable, never an approval.",
+            message:
+              "agy returned empty output on exit 0 (non-TTY response drop) — treated as unavailable, never an approval.",
             remediation: "Retry; if persistent, run /agy-gate:setup to re-check the agy login.",
           },
         };
@@ -210,11 +236,20 @@ export function createCliDriver({
       // 6. Tolerant-parse the JSON, then validate against the draft-07 schema.
       const parsed = tolerantParse(stdout);
       if (parsed === null) {
-        return { ok: false, error: { code: "CLI_ERROR", message: "agy returned an unparseable (non-JSON) payload." } };
+        return {
+          ok: false,
+          error: { code: "CLI_ERROR", message: "agy returned an unparseable (non-JSON) payload." },
+        };
       }
       const validated = await validate(kind, parsed, { dataDir });
       if (!validated.ok) {
-        return { ok: false, error: { code: "SCHEMA_INVALID", message: "agy payload failed schema validation after normalization." } };
+        return {
+          ok: false,
+          error: {
+            code: "SCHEMA_INVALID",
+            message: "agy payload failed schema validation after normalization.",
+          },
+        };
       }
       return { ok: true, payload: validated.value };
     },
