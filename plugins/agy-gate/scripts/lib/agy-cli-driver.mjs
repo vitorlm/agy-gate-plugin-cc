@@ -165,6 +165,7 @@ export function createCliDriver({
         const child = spawn(wrapped.command, wrapped.args, {
           cwd: workingDirectory,
           env: stripApiKeys(env),
+          stdio: ["ignore", "pipe", "pipe"],
         });
         const timer = setTimeout(() => {
           if (settled) return;
